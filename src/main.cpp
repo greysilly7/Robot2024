@@ -79,7 +79,7 @@ void autonomous()
 					.withDimensions(AbstractMotor::gearset::green, {{4_in, 11.5_in}, imev5GreenTPR})
 					.build();
 
-	intake.moveAbsolute(-105, 50);
+	intake.moveAbsolute(-190, 50);
 
 	// Drive forward 52 inches
 	driveController->moveDistance(52_in);
@@ -125,7 +125,7 @@ void opcontrol()
 		if (master.get_digital(DIGITAL_L1))
 			intake.moveAbsolute(0, 50);
 		else if (master.get_digital(DIGITAL_L2))
-			intake.moveAbsolute(-130, 50);
+			intake.moveAbsolute(-190, 50);
 		pros::delay(20);
 	}
 }
