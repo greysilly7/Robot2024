@@ -22,7 +22,7 @@
  *
  * For instance, E_CONTROLLER_MASTER has a shorter name: CONTROLLER_MASTER.
  * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but
- * not convenient for most student programmers.
+ * not convienent for most student programmers.
  */
 #define PROS_USE_SIMPLE_NAMES
 
@@ -40,9 +40,6 @@
  * You should add more #includes here
  */
 #include "okapi/api.hpp"
-#include "intake.hpp"
-#include "driveControl.hpp"
-// #include "pros/api_legacy.h"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -62,14 +59,13 @@ using namespace okapi;
  * button press in opcontrol() for testing purposes).
  */
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-  void autonomous(void);
-  void initialize(void);
-  void disabled(void);
-  void competition_initialize(void);
-  void opcontrol(void);
+void autonomous(void);
+void initialize(void);
+void disabled(void);
+void competition_initialize(void);
+void opcontrol(void);
 #ifdef __cplusplus
 }
 #endif
@@ -78,7 +74,7 @@ extern "C"
 /**
  * You can add C++-only headers here
  */
-// #include <iostream>
+//#include <iostream>
 #endif
 
-#endif // _PROS_MAIN_H_
+#endif  // _PROS_MAIN_H_
