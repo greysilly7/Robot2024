@@ -3,9 +3,6 @@
 #ifndef DRIVE_CONTROL_HPP
 #define DRIVE_CONTROL_HPP
 
-#include "main.h"
-#include <cmath>
-
 class DriveControl
 {
 public:

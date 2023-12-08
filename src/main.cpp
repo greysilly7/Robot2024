@@ -1,30 +1,12 @@
 #include "main.h"
+#include "driveControl.hpp"
+#include "launcher.hpp"
 
 // Initize some variables for Auton and testing it
 // This lets use go on either side of the field, default is turning left
 bool mirrorAuton = false;
 // This lets us test auton in teleop, tied to a button
 bool testAuton = false;
-
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button()
-{
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed)
-	{
-		pros::lcd::set_text(2, "I was pressed!");
-	}
-	else
-	{
-		pros::lcd::clear_line(2);
-	}
-}
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -40,10 +22,8 @@ void initialize()
 	// Register a call back for button 0 and 2 changing to toggle mirrorAuton and testAuton
 	pros::lcd::register_btn1_cb([]()
 															{ mirrorAuton = !mirrorAuton; });
-	/*
-pros::lcd::register_btn2_cb([]()
-	{ testAuton = !testAuton; });
-	*/
+	pros::lcd::register_btn2_cb([]()
+															{ testAuton = !testAuton; });
 }
 
 /**
@@ -93,12 +73,21 @@ void autonomous() {}
 void opcontrol()
 {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor frontLeftMotor(1);
-	pros::Motor frontRightMotor(-2);
-	pros::Motor backLeftMotor(3);
-	pros::Motor backRightMotor(-4);
+	pros::Motor frontLeftMotor(-2);
+	pros::Motor frontRightMotor(4);
+	pros::Motor backLeftMotor(-1);
+	pros::Motor backRightMotor(3);
+
+	pros::Motor launcherTop(5);
+	pros::Motor luancherButtom(6);
 
 	DriveControl driveControl(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
+	Launcher launcher(launcherTop, luancherButtom);
+
+	// Keep track of launcher state
+	bool isLauncherOn = false;
+	// Debounce delay in milliseconds
+	const int debounceDelay = 200;
 
 	while (true)
 	{
@@ -111,7 +100,29 @@ void opcontrol()
 		int leftJoystickX = master.get_analog(ANALOG_LEFT_X);		 // Strafing
 		int rightJoystickX = -master.get_analog(ANALOG_RIGHT_X); // Rotation
 
+		// Drive the robot using the joystick values
 		driveControl.driveWithTrapezoidalProfile(leftJoystickY, leftJoystickX, rightJoystickX);
-		pros::delay(20); // Run for 20 ms then update
+
+		// If L1 is pressed and the launcher is off, turn it on
+		if (master.get_digital(DIGITAL_L1) && !isLauncherOn)
+		{
+			launcher.launch();
+			isLauncherOn = true;
+
+			// Debounce delay
+			pros::delay(debounceDelay);
+		}
+		// If L2 is pressed and the launcher is on, turn it off
+		else if (master.get_digital(DIGITAL_L2) && isLauncherOn)
+		{
+			launcher.stop();
+			isLauncherOn = false;
+
+			// Debounce delay
+			pros::delay(debounceDelay);
+		}
+
+		// Delay for a short time before the next update
+		pros::delay(20);
 	}
 }
